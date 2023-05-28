@@ -1,38 +1,46 @@
+NAME = philo
 
-NAME	=	philo
+SRC_DIR = ./src
 
-CC		=	gcc
-INCLUDE	=	includes
-CFLAGS	=	-Wall -Wextra -Werror -I$(INCLUDE)
-RM		=	rm -f
+BIN_DIR = ./bin/
 
-SRCS	=	philosophers.c \
-			srcs/utils.c \
-			srcs/atoitoa.c \
-			srcs/init.c \
-			srcs/philo_functions.c \
-			srcs/threads.c
+SRC = $(SRC_DIR)/philosophers.c		\
+	  $(SRC_DIR)/init.c				\
+	  $(SRC_DIR)/philo_functions.c	\
+	  $(SRC_DIR)/atoitoa.c			\
+	  $(SRC_DIR)/threads.c			\
+	  $(SRC_DIR)/utils.c			\
 
-OBJS	=	$(SRCS:%.c=%.o)
+OBJ = $(SRC:$(SRC_DIR)/%.c=$(BIN_DIR)%.o)
 
-all:		$(NAME)
 
-$(NAME):	$(OBJS)
-			@$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
-			@echo "Linked into executable \033[0;32mphilo\033[0m."
+INCLUDES = ./includes
 
-.c.o:
-			@$(CC) $(CFLAGS) -c $< -o $(<:.c=.o)
-			@echo "Compiling $<."
+CFLAGS = -Wall -Werror -Wextra -I$(INCLUDES) -g3
 
-clean:
-			@$(RM) $(OBJS)
-			@echo "Removed object files."
-			
-fclean:		clean
-			@$(RM) $(NAME)
-			@echo "Removed executable."
+all :	$(BIN_DIR) $(NAME)
 
-re:			fclean all
+$(OBJ) :	 $(BIN_DIR)%.o: $(SRC_DIR)/%.c
+		@ $(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY:		all clean fclean re
+$(NAME) :	$(BIN_DIR) $(OBJ)
+			@ $(CC) $(CFLAGS) $(OBJ) -o $(NAME) -lreadline
+			@ echo "\e[33m\e[1m\tMake\e[0m [🗿] : \e[1mDone ! ✅"
+
+$(BIN_DIR) :
+		@ mkdir -p $(BIN_DIR)
+
+clean :
+		@ rm -f $(OBJ)
+		@ rm -rf $(BIN_DIR)
+		@echo "\e[33m\e[1m\tMake\e[0m [🗿] : \e[1mRemove binary files .. 🧹"
+
+fclean : clean
+		@ rm -f $(NAME)
+		@echo "\e[33m\e[1m\tMake\e[0m [🗿] : \e[1mRemove executable .. 🗑️"
+		
+re :
+	@echo "\e[33m\e[1m\tMake\e[0m [🗿] : \e[1mRecompile .. 🔄"
+	@ $(MAKE) -s fclean all
+
+.PHONY: all clean fclean re
