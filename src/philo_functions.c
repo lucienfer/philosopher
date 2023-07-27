@@ -6,7 +6,7 @@
 /*   By: luciefer <luciefer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/23 10:29:44 by luciefer          #+#    #+#             */
-/*   Updated: 2023/05/23 10:31:21 by luciefer         ###   ########.fr       */
+/*   Updated: 2023/07/26 18:13:17 by luciefer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,24 @@ void	philo_print(char *msg, t_philo *philo, int unlock)
 
 void	philo_eat(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->env->forks[philo->ffork]);
-	philo_print("has taken a fork", philo, UNLOCK);
-	pthread_mutex_lock(&philo->env->forks[philo->sfork]);
-	philo_print("has taken a fork", philo, UNLOCK);
+	if (philo->pos % 2)
+	{
+		pthread_mutex_lock(&philo->env->forks[philo->ffork]);
+		philo_print("has taken a fork", philo, UNLOCK);
+		pthread_mutex_lock(&philo->env->forks[philo->sfork]);
+		philo_print("has taken a fork", philo, UNLOCK);
+	}
+	else 
+	{
+		pthread_mutex_lock(&philo->env->forks[philo->sfork]);
+		philo_print("has taken a fork", philo, UNLOCK);
+		pthread_mutex_lock(&philo->env->forks[philo->ffork]);
+		philo_print("has taken a fork", philo, UNLOCK);
+	}
 	pthread_mutex_lock(&philo->env->meal);
-	philo_print("is eating", philo, UNLOCK);
 	philo->last_ate = get_time();
 	pthread_mutex_unlock(&philo->env->meal);
+	philo_print("is eating", philo, UNLOCK);
 	new_sleep(philo->env->time_to_eat, philo->env);
 	philo->ate_times++;
 	pthread_mutex_unlock(&philo->env->forks[philo->sfork]);

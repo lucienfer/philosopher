@@ -6,11 +6,27 @@
 /*   By: luciefer <luciefer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/23 10:29:48 by luciefer          #+#    #+#             */
-/*   Updated: 2023/05/23 10:31:18 by luciefer         ###   ########.fr       */
+/*   Updated: 2023/07/26 12:47:53 by luciefer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+
+static int	ft_ischar(char *nptr)
+{
+	int	i;
+
+	i = 0;
+	if (nptr[i] == '-' || nptr[i] == '+')
+		i++;
+	while (nptr[i])
+	{
+		if (nptr[i] < '0' || nptr[i] > '9')
+			return (0);
+		i++;
+	}
+	return (1);
+}
 
 static int	ft_check_params(t_env *env, int argc, char *argv[])
 {
@@ -21,7 +37,7 @@ static int	ft_check_params(t_env *env, int argc, char *argv[])
 	{
 		if (!ft_isint(argv[i]))
 			return (0);
-		if (ft_atoi(argv[i]) < 0)
+		if (!ft_ischar(argv[i]) || ft_atoi(argv[i]) < 0)
 			return (0);
 		i++;
 	}
