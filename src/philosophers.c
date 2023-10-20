@@ -6,7 +6,7 @@
 /*   By: luciefer <luciefer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/23 10:29:48 by luciefer          #+#    #+#             */
-/*   Updated: 2023/07/26 12:47:53 by luciefer         ###   ########.fr       */
+/*   Updated: 2023/07/29 11:37:28 by luciefer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ static int	ft_ischar(char *nptr)
 	}
 	return (1);
 }
+
 
 static int	ft_check_params(t_env *env, int argc, char *argv[])
 {

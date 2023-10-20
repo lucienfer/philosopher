@@ -6,7 +6,7 @@
 /*   By: luciefer <luciefer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/23 10:29:44 by luciefer          #+#    #+#             */
-/*   Updated: 2023/07/26 18:13:17 by luciefer         ###   ########.fr       */
+/*   Updated: 2023/07/28 18:01:12 by luciefer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	philo_eat(t_philo *philo)
 		pthread_mutex_lock(&philo->env->forks[philo->sfork]);
 		philo_print("has taken a fork", philo, UNLOCK);
 	}
-	else 
+	else
 	{
 		pthread_mutex_lock(&philo->env->forks[philo->sfork]);
 		philo_print("has taken a fork", philo, UNLOCK);
@@ -42,13 +42,22 @@ void	philo_eat(t_philo *philo)
 		philo_print("has taken a fork", philo, UNLOCK);
 	}
 	pthread_mutex_lock(&philo->env->meal);
+	philo_print("is eating", philo, UNLOCK);
 	philo->last_ate = get_time();
 	pthread_mutex_unlock(&philo->env->meal);
-	philo_print("is eating", philo, UNLOCK);
-	new_sleep(philo->env->time_to_eat, philo->env);
+	new_sleep(philo->env->time_to_eat);
+	pthread_mutex_lock(&philo->env->meal);
 	philo->ate_times++;
+	pthread_mutex_unlock(&philo->env->meal);
 	pthread_mutex_unlock(&philo->env->forks[philo->sfork]);
 	pthread_mutex_unlock(&philo->env->forks[philo->ffork]);
+}
+
+void	lock_max_ate(t_env *env, int i)
+{	
+	pthread_mutex_lock(&env->writing);
+	env->max_ate = (i == env->count);
+	pthread_mutex_unlock(&env->writing);
 }
 
 void	philo_dead(t_env *env, t_philo *philo)
@@ -71,9 +80,11 @@ void	philo_dead(t_env *env, t_philo *philo)
 		if (env->stop_condition)
 			break ;
 		i = 0;
+		pthread_mutex_lock(&env->meal);
 		while (env->eat_count_max && i < env->count
 			&& philo[i].ate_times >= env->eat_count_max)
 			i++;
-		env->max_ate = (i == env->count);
+		pthread_mutex_unlock(&env->meal);
+		lock_max_ate(env, i);
 	}
 }

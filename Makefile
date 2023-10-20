@@ -16,7 +16,7 @@ OBJ = $(SRC:$(SRC_DIR)/%.c=$(BIN_DIR)%.o)
 
 INCLUDES = ./includes
 
-CFLAGS = -Wall -Werror -Wextra -I$(INCLUDES) -fsanitize=thread
+CFLAGS = -Wall -Werror -Wextra -I$(INCLUDES)
 
 all :	$(BIN_DIR) $(NAME)
 

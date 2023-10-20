@@ -6,7 +6,7 @@
 /*   By: luciefer <luciefer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/23 10:29:55 by luciefer          #+#    #+#             */
-/*   Updated: 2023/07/26 11:59:01 by luciefer         ###   ########.fr       */
+/*   Updated: 2023/07/28 18:03:02 by luciefer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,17 +20,13 @@ unsigned long	get_time(void)
 	return ((time.tv_sec * (unsigned long)1000) + (time.tv_usec / 1000));
 }
 
-void	new_sleep(unsigned long duration, t_env *env)
+void	new_sleep(unsigned long duration)
 {
 	unsigned long	start;
 
 	start = get_time();
-	while (!env->stop_condition)
-	{
-		if (get_time() - start >= duration)
-			break ;
-		usleep(env->count * 2);
-	}
+	while ((get_time() - start) < duration)
+		usleep(10);
 }
 
 int	ft_strlen(char *str)

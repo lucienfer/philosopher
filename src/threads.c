@@ -6,11 +6,31 @@
 /*   By: luciefer <luciefer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/23 10:29:52 by luciefer          #+#    #+#             */
-/*   Updated: 2023/07/26 18:26:34 by luciefer         ###   ########.fr       */
+/*   Updated: 2023/07/28 18:54:23 by luciefer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+
+int	check_max_ate(t_env *env)
+{
+	int		i;
+
+	pthread_mutex_lock(&env->writing);
+	i = env->max_ate;
+	pthread_mutex_unlock(&env->writing);
+	return (i);
+}
+
+void	sleep_sync(t_env *env)
+{
+	if (env->count % 2)
+	{
+		if (env->time_to_eat >= env->time_to_sleep)
+			usleep((env->time_to_eat - env->time_to_sleep) * 1000);
+		usleep(500);
+	}
+}
 
 static void	*routine(void *params)
 {
@@ -19,14 +39,22 @@ static void	*routine(void *params)
 
 	philo = (t_philo *)params;
 	env = philo->env;
-	if (philo->pos % 2 && env->count > 1)
-		new_sleep(env->time_to_eat / 50, env);
-	while (!env->stop_condition && !env->max_ate)
+	if (env->count == 1)
+	{
+		philo_print("has taken a fork", philo, UNLOCK);
+		new_sleep(env->time_to_die);
+		philo_print("died", philo, UNLOCK);
+		return (NULL);
+	}
+	if (philo->pos % 2 && !check_max_ate(env))
+		usleep(env->time_to_eat * 500);
+	while (!env->stop_condition && !check_max_ate(env))
 	{
 		philo_eat(philo);
 		philo_print("is sleeping", philo, UNLOCK);
-		new_sleep(env->time_to_sleep, env);
+		new_sleep(env->time_to_sleep);
 		philo_print("is thinking", philo, UNLOCK);
+		sleep_sync(env);
 	}
 	return (NULL);
 }
@@ -36,7 +64,7 @@ static void	exit_threads(t_env *env)
 	int	i;
 
 	if (env->count == 1)
-		pthread_detach(env->philos[0].thread_id);
+		pthread_join(env->philos[0].thread_id, NULL);
 	else
 	{
 		i = -1;
@@ -69,7 +97,8 @@ int	start_threads(t_env *env)
 			return (0);
 	}
 	philo_dead(env, env->philos);
-	pthread_mutex_unlock(&env->writing);
+	if (env->stop_condition)
+		pthread_mutex_unlock(&env->writing);
 	exit_threads(env);
 	return (1);
 }

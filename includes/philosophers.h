@@ -6,7 +6,7 @@
 /*   By: luciefer <luciefer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/23 10:29:59 by luciefer          #+#    #+#             */
-/*   Updated: 2023/07/26 11:37:19 by luciefer         ###   ########.fr       */
+/*   Updated: 2023/07/28 17:35:18 by luciefer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,6 @@ void			philo_eat(t_philo *philo);
 void			philo_dead(t_env *env, t_philo *philo);
 int				start_threads(t_env *env);
 unsigned long	get_time(void);
-void			new_sleep(unsigned long duration, t_env *env);
+void			new_sleep(unsigned long duration);
 
 #endif
